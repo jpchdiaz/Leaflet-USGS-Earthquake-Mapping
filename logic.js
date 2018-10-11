@@ -1,7 +1,8 @@
 // Store our API endpoint inside queryUrl
 var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
 
-var tectonicUrl = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json"
+//PART 2: store tectonic plate JSON
+var tectonicUrl = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json";
 
 // Perform a GET request to the query URL
 d3.json(queryUrl, function(data) {
@@ -60,9 +61,13 @@ function createMap(earthquakes) {
     "Dark Map": darkmap
   };
 
+  //PART 2: create layer for tectonic plates
+  var tectonicPlates = new L.LayerGroup();
+
   // Create overlay object to hold our overlay layer
   var overlayMaps = {
-    Earthquakes: earthquakes
+    "Earthquakes": earthquakes,
+    "Tectonic Plates": tectonicPlates
   };
 
   // Create our map, giving it the streetmap and earthquakes layers to display on load
@@ -73,6 +78,18 @@ function createMap(earthquakes) {
     zoom: 3,
     layers: [streetmap, earthquakes]
   });
+
+  //add tectonic plates data
+  d3.json(tectonicUrl, function(plateData) {
+  // Adding our geoJSON data, along with style information, to the tectonicplates
+  // layer.
+  L.geoJson(plateData, {
+    color: "yellow",
+    weight: 2
+  })
+  .addTo(tectonicPlates);
+  });
+
 
   // Create a layer control
   // Pass in our baseMaps and overlayMaps
